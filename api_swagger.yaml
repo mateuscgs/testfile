@@ -1,0 +1,330 @@
+swagger: "2.0"
+info:
+  description: "Requests API for response data in site. For requests worked you need authorization via header, key: Authorization, to have a valid token, generate valid token in profile edition."
+  version: "1.0.0"
+  title: "Global Flu View - API"
+  contact:
+    email: "globalfluview@endingpandemics.org"
+host: "staging.globalfluview.org"
+basePath: "/api/v1"
+tags:
+- name: "map"
+  description: "JSON with pins map format"
+- name: "map_dates"
+  description: "Array of datas with registration"
+- name: "map_polygon"
+  description: "Choropleth"
+- name: "surveys"
+  description: "Data initial chart"
+paths:
+  /map:
+    get:
+      tags:
+      - "map"
+      summary: "Return the data pinned to the map."
+      operationId: "map"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "csv"
+        in: "query"
+        description: "If you need generate CSV response"
+        required: false
+        type: "boolean"
+      - name: "date"
+        in: "query"
+        description: "Date filter, format: yyyy-mm-dd"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "filters"
+        description: "Additional Filters for API put in Query Params"
+        required: false
+        schema:
+          type: "object"
+          properties:
+            age_max:
+              type: "integer"
+            age_min:
+              type: "integer"
+            gender:
+              type: "string"
+              example: "M or F"
+            is_vax:
+              type: "integer"
+              example: "Parms indicate vax or not vax. 1 | 0"
+            source:
+              type: "string"
+              example: "Origin data from. flunearyou | flutai | flutracking"
+            zipcode:
+              type: "string"
+              example: "Zipcode"
+            over_time:
+              type: "string"
+              example: "Parameter that allows getting the data from the past date up to 54 weeks before. true | false"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              type:
+                type: string
+                example: "FeatureCollection"
+              features:
+                type: array
+                items:
+                  $ref: "#/definitions/Map"
+      security:
+      - authorization: []
+  /map_dates:
+    get:
+      tags:
+      - "map_dates"
+      summary: "Returns the dates with registered data."
+      operationId: "map_dates"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "csv"
+        in: "query"
+        description: "If you need generate CSV response"
+        required: false
+        type: "boolean"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items: 
+              type: string
+              example: "yyyy-mm-dd"
+      security:
+      - authorization: []
+  /map_polygon:
+    get:
+      tags:
+      - "map_polygon"
+      summary: "Returns map data for choropleth."
+      operationId: "map_polygon"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "csv"
+        in: "query"
+        description: "If you need generate CSV response"
+        required: false
+        type: "boolean"
+      - name: "date"
+        in: "query"
+        description: "Date filter, format: yyyy-mm-dd"
+        required: true
+        type: "string"
+      - in: "body"
+        name: "filters"
+        description: "Additional Filters for API put in Query Params"
+        required: false
+        schema:
+          type: "object"
+          properties:
+            age_max:
+              type: "integer"
+            age_min:
+              type: "integer"
+            gender:
+              type: "string"
+              example: "M or F"
+            is_vax:
+              type: "integer"
+              example: "Parms indicate vax or not vax. 1 | 0"
+            source:
+              type: "string"
+              example: "Origin data from. flunearyou | flutai | flutracking"
+            zipcode:
+              type: "string"
+              example: "Zipcode"
+            over_time:
+              type: "string"
+              example: "Parameter that allows getting the data from the past date up to 54 weeks before. true | false"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              type:
+                type: string
+                example: "FeatureCollection"
+              features:
+                type: array
+                items:
+                  $ref: "#/definitions/MapPolygon"
+              legend:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    color:
+                      type: string
+                    text:
+                      type: string
+      security:
+      - authorization: []
+  /surveys:
+    get:
+      tags:
+      - "surveys"
+      summary: "Returns chart data from Reports."
+      operationId: "surveys"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "csv"
+        in: "query"
+        description: "If you need generate CSV response"
+        required: false
+        type: "boolean"
+      - in: "body"
+        name: "filters"
+        description: "Additional Filters for API put in Query Params"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            date_end:
+              example: "Date End. format: yyyy-mm-dd. Required"
+            date_start:
+              example: "Date Start. format: yyyy-mm-dd. Required"
+            age_max:
+              type: "integer"
+            age_min:
+              type: "integer"
+            gender:
+              type: "string"
+              example: "M or F"
+            is_vax:
+              type: "integer"
+              example: "Parms indicate vax or not vax. 1 | 0"
+            source:
+              type: "string"
+              example: "Origin data from. flunearyou | flutai | flutracking"
+            cough:
+              type: "integer"
+              example: "Parms indicate with cough. 1 | 0"
+            fatigue:
+              type: "integer"
+              example: "Parms indicate fatigue. 1 | 0"
+            fever:
+              type: "integer"
+              example: "Parms indicate fever. 1 | 0"
+            is_ili:
+              type: "integer"
+              example: "Parms indicate ili. 1 | 0"
+            muscle_pain:
+              type: "integer"
+              example: "Parms indicate muscle_pain. 1 | 0"
+            short_breath:
+              type: "integer"
+              example: "Parms indicate short_breath. 1 | 0"
+            sore_throat:
+              type: "integer"
+              example: "Parms indicate sore_throat. 1 | 0"
+            headache:
+              type: "integer"
+              example: "Parms indicate headache. 1 | 0"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "object"
+            properties:
+              rows:
+                type: array
+                items:
+                  $ref: "#/definitions/Surveys"
+      security:
+      - authorization: []
+securityDefinitions:
+  authorization:
+    type: "apiKey"
+    name: "authorization"
+    in: "header"
+definitions:
+  Map:
+    type: "object"
+    properties:
+      lat:
+        type: "number"
+        format: "double"
+      lng:
+        type: "number"
+        format: "double"
+      date:
+        type: "string"
+      report_count:
+        type: "integer"
+      ili_count:
+        type: "integer"
+      no_symptoms_count:
+        type: "integer"
+      some_symptoms_count:
+        type: "integer"
+      postcode:
+        type: "string"
+      country:
+        type: "string"
+      ili_percentage:
+        type: "integer"
+      no_symptoms_percentage:
+        type: "integer"
+      some_symptoms_percentage:
+        type: "integer"
+  MapPolygon:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+      type:
+        type: "string"
+      geometry:
+        type: "object"
+        properties:
+          coordinates:
+            type: array
+            items:
+              type: array
+              items:
+                type: number
+          type:
+            type: string
+            example: "Polygon"
+      properties:
+        type: "object"
+        properties:
+          ili_by_100_000:
+            type: "integer"
+          ili_count:
+            type: "integer"
+          ili_percentage:
+            type: "integer"
+          color_ili_by_100_000:
+            type: "string"
+          color_ili_percentage:
+            type: "string"
+          name:
+            type: "string"
+          population:
+            type: "integer"
+          report_count:
+            type: "integer"
+  Surveys:
+    type: "object"
+    properties:
+      match_count:
+        type: "integer"
+      percentage_count:
+        type: "number"
+      total_count:
+        type: "integer"
+      week:
+        type: "string"
